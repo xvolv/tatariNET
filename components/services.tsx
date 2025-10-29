@@ -3,16 +3,36 @@
 import React from "react";
 import * as Icons from "lucide-react";
 
+const normalizeKey = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
 function TechIcon({ tech, size = 32 }: { tech: string; size?: number }) {
   // normalized key
   const key = tech.toLowerCase().replace(/\s|\.|\-/g, "");
   const ICON_MAP: Record<string, string> = {
+    // frontend icons
+    html: "html",
+    css: "css",
+    js: "js",
+    javascript: "js",
+    tailwind: "tailwind",
+    tailwindcss: "tailwind",
+    // general
     nextjs: "nextjs",
     next: "nextjs",
     react: "react",
     reactnative: "react",
     typescript: "typescript",
-    javascript: "javascript",
+    node: "node",
+    nodejs: "node",
+    express: "expressjs",
+    expressjs: "expressjs",
+    nest: "nestjs",
+    nestjs: "nestjs",
+    java: "java",
+    cpp: "cpp",
+    cplusplus: "cpp",
+    "c++": "cpp",
+    php: "php",
     aws: "aws",
     kubernetes: "kubernetes",
     k8s: "kubernetes",
@@ -20,8 +40,11 @@ function TechIcon({ tech, size = 32 }: { tech: string; size?: number }) {
     ml: "ml",
     python: "python",
     graphql: "graphql",
-    rest: "rest",
-    oauth: "oauth",
+    postman: "postman",
+    rest: "api",
+    oauth: "betterauth",
+    oauth2: "betterauth",
+    openid: "betterauth",
     monitoring: "monitoring",
     ci: "cicd",
     cicd: "cicd",
@@ -35,8 +58,6 @@ function TechIcon({ tech, size = 32 }: { tech: string; size?: number }) {
     sla: "sla",
   };
 
-  const iconName = ICON_MAP[key];
-  const IconComp = iconName ? (Icons as any)[iconName] : null;
   const iconFile = ICON_MAP[key];
   if (iconFile) {
     // use the official (or representative) SVG in /public/tech-icons
@@ -50,11 +71,13 @@ function TechIcon({ tech, size = 32 }: { tech: string; size?: number }) {
       />
     );
   }
+
   const initials = tech
     .split(/\s|\-|\./)
     .map((p) => p.charAt(0).toUpperCase())
     .slice(0, 2)
     .join("");
+
   return (
     <span
       className="inline-flex items-center justify-center rounded-sm bg-slate-100 text-xs text-slate-700"
@@ -114,40 +137,122 @@ function GroupedTechRotator({
   interval?: number;
 }) {
   const [groupIndex, setGroupIndex] = React.useState(0);
-  const [fading, setFading] = React.useState(false);
+  const [paused, setPaused] = React.useState(false);
 
+  // split into groups of groupSize
   const groups: string[][] = [];
   for (let i = 0; i < tech.length; i += groupSize) {
     groups.push(tech.slice(i, i + groupSize));
   }
 
+  const iconSize = 36; // px
+  const gapPx = 8; // approximate gap (0.5rem)
+  const viewportWidth = groupSize * iconSize + (groupSize - 1) * gapPx;
+  const innerWidth = groups.length * viewportWidth;
+
+  const [dir, setDir] = React.useState(1);
+
   React.useEffect(() => {
     if (groups.length <= 1) return;
+    if (paused) return;
     const id = setInterval(() => {
-      // trigger fade out
-      setFading(true);
-      setTimeout(() => {
-        setGroupIndex((g) => (g + 1) % groups.length);
-        setFading(false);
-      }, 360);
+      setGroupIndex((g) => {
+        const next = g + dir;
+        if (next >= groups.length) {
+          setDir(-1);
+          return Math.max(0, g - 1);
+        }
+        if (next < 0) {
+          setDir(1);
+          return Math.min(groups.length - 1, g + 1);
+        }
+        return next;
+      });
     }, interval);
     return () => clearInterval(id);
-  }, [groups.length, interval]);
+  }, [groups.length, interval, paused, dir]);
 
-  const current = groups[groupIndex] || [];
+  const innerStyle: React.CSSProperties = {
+    width: innerWidth,
+    display: "flex",
+    transform: `translateX(-${groupIndex * viewportWidth}px)`,
+    transition: "transform 480ms cubic-bezier(0.2,0.8,0.2,1)",
+  };
 
   return (
-    <div className="tech-rotator">
-      <div className="tech-rotator__viewport">
-        <div
-          className={`tech-rotator__group ${
-            fading ? "tech-rotator__group--hidden" : ""
-          }`}
-          aria-hidden
-        >
-          {current.map((t) => (
-            <div key={t} className="tech-rotator__icon" title={t}>
-              <TechIcon tech={t} size={36} />
+    <div
+      className="tech-rotator"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div
+        className="tech-rotator__viewport"
+        style={{ width: viewportWidth, overflow: "hidden" }}
+      >
+        <div className="tech-rotator__inner" style={innerStyle} aria-hidden>
+          {groups.map((grp, gi) => (
+            <div
+              key={gi}
+              className="tech-rotator__group"
+              style={{
+                display: "flex",
+                gap: `${gapPx}px`,
+                alignItems: "center",
+              }}
+            >
+              {grp.map((t) => {
+                const nk = normalizeKey(t);
+                // Render some items (CI/CD, Monitoring, AI, Security, Digital Transformation) as text tiles (no icon)
+                if (
+                  nk === "cicd" ||
+                  nk === "ci" ||
+                  nk === "monitoring" ||
+                  nk === "monitor" ||
+                  nk === "ai" ||
+                  nk === "audits" ||
+                  nk === "pentests" ||
+                  nk === "pentest" ||
+                  nk === "policies" ||
+                  nk === "strategy" ||
+                  nk === "roadmaps" ||
+                  nk === "roadmap" ||
+                  nk === "change" ||
+                  nk === "restful" ||
+                  nk === "restfulapi"
+                ) {
+                  return (
+                    <div
+                      key={t}
+                      className="tech-rotator__icon"
+                      title={t}
+                      style={{
+                        minWidth: iconSize,
+                        height: iconSize,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0 8px",
+                        // allow text to grow naturally (no truncation)
+                      }}
+                    >
+                      <span className="text-sm font-medium text-slate-700">
+                        {t}
+                      </span>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={t}
+                    className="tech-rotator__icon"
+                    title={t}
+                    style={{ width: iconSize, height: iconSize }}
+                  >
+                    <TechIcon tech={t} size={iconSize} />
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
@@ -162,7 +267,22 @@ export default function Services() {
       icon: "Monitor",
       title: "Product Engineering",
       desc: "End-to-end web & mobile product development",
-      tech: ["Next.js", "React", "React Native", "TypeScript"],
+      tech: [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "TailwindCSS",
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Node.js",
+        "ExpressJS",
+        "NestJS",
+        "C++",
+        "Python",
+        "Java",
+        "PHP",
+      ],
       abstract:
         "Design and build beautiful, high-performance products — web and mobile — backed by strong UX and engineering practices.",
     },
@@ -178,15 +298,15 @@ export default function Services() {
       icon: "Settings",
       title: "Custom Software & Integrations",
       desc: "APIs, integrations and backend systems",
-      tech: ["APIs", "GraphQL", "REST", "OAuth"],
+      tech: ["APIs", "GraphQL", "Postman", "OAuth"],
       abstract:
         "Custom backend systems and integrations that connect your ecosystem with robustness and observability.",
     },
     {
       icon: "Cpu",
       title: "AI, Data & R&D",
-      desc: "ML, automation and experimental R&D",
-      tech: ["ML", "Python", "ETL"],
+      desc: "Machine Learning, automation and experimental R&D",
+      tech: ["Machine Learning", "Python", "AI"],
       abstract:
         "Applied machine learning, data pipelines, and rapid experimentation to deliver measurable business outcomes.",
     },
@@ -206,27 +326,8 @@ export default function Services() {
       abstract:
         "Transformation programs and consulting to modernize teams and accelerate delivery.",
     },
-    {
-      icon: "BarChart2",
-      title: "Marketing & Growth",
-      desc: "Data-driven marketing systems and automation",
-      tech: ["Analytics", "CDP", "Automation"],
-      abstract:
-        "Marketing technology and growth workflows to help you acquire and retain customers efficiently.",
-    },
-    {
-      icon: "Users",
-      title: "Training & Support",
-      desc: "Onboarding, runbooks and ongoing support",
-      tech: ["Training", "Runbooks", "SLA"],
-      abstract:
-        "Hands-on training and support to ensure your team can operate and evolve production systems confidently.",
-    },
+    // Marketing & Growth and Training & Support removed per request
   ];
-
-  // no animations: simple static cards
-
-  // no network overlay: keep only card reveal observer
 
   return (
     <section
@@ -252,6 +353,7 @@ export default function Services() {
             const delay = `${Math.min(index * 0.08, 1.2)}s`;
             const IconComp =
               (Icons as any)[service.icon] || (Icons as any)["Code"];
+
             return (
               <article
                 key={service.title}
@@ -259,24 +361,6 @@ export default function Services() {
                 className="relative services-card overflow-hidden rounded-2xl p-6 sm:p-8"
               >
                 {/* subtle watermark graphic */}
-                <svg
-                  aria-hidden
-                  className="absolute -right-6 -top-6 w-48 h-48 opacity-8 pointer-events-none"
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="xMidYMid meet"
-                >
-                  <g
-                    stroke="var(--color-primary)"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeOpacity={0.06}
-                  >
-                    <path d="M10 80 C30 40, 70 40, 90 80" />
-                    <circle cx="20" cy="30" r="6" />
-                    <circle cx="80" cy="20" r="8" />
-                  </g>
-                </svg>
-
                 <div className="flex items-start gap-4 z-10 relative">
                   <div className="shrink-0 w-20 h-20 rounded-xl flex items-center justify-center services-icon">
                     <IconComp
@@ -330,21 +414,52 @@ export default function Services() {
                   {service.tech.length > 4 ? (
                     <div className="flex items-center justify-start">
                       <GroupedTechRotator tech={service.tech} />
-                      <div className="ml-4 text-sm text-slate-700">
-                        {service.tech.join(" • ")}
-                      </div>
+                      <span className="sr-only">{service.tech.join(", ")}</span>
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {service.tech.map((t) => (
-                        <span
-                          key={t}
-                          className="inline-flex items-center gap-3 px-3 py-1 rounded-full text-sm font-medium bg-white text-slate-700 shadow-sm"
-                        >
-                          <TechIcon tech={t} />
-                          {t}
-                        </span>
-                      ))}
+                      {service.tech.map((t) => {
+                        const nk = normalizeKey(t);
+                        // render plain text for CI/CD, Monitoring, AI, Security notes, and Digital Transformation items (no icon)
+                        if (
+                          nk === "cicd" ||
+                          nk === "ci" ||
+                          nk === "monitoring" ||
+                          nk === "monitor" ||
+                          nk === "ai" ||
+                          nk === "audits" ||
+                          nk === "pentests" ||
+                          nk === "pentest" ||
+                          nk === "policies" ||
+                          nk === "strategy" ||
+                          nk === "roadmaps" ||
+                          nk === "roadmap" ||
+                          nk === "change" ||
+                          nk === "restful" ||
+                          nk === "restfulapi"
+                        ) {
+                          return (
+                            <span
+                              key={t}
+                              className="inline-flex items-center gap-3 px-3 py-1 rounded-full text-sm font-medium bg-white text-slate-700 shadow-sm"
+                            >
+                              <span className="text-sm font-medium text-slate-700">
+                                {t}
+                              </span>
+                            </span>
+                          );
+                        }
+
+                        return (
+                          <span
+                            key={t}
+                            className="inline-flex items-center gap-3 px-3 py-1 rounded-full text-sm font-medium bg-white text-slate-700 shadow-sm"
+                          >
+                            <TechIcon tech={t} />
+                            <span className="sr-only">{t}</span>
+                          </span>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

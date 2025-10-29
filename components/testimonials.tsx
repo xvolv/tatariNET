@@ -52,6 +52,8 @@ export default function Testimonials() {
   const totalPages = Math.ceil(testimonials.length / perPage);
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");
+  // autoplay state: cycles pages circularly; paused on hover or user interaction
+  const [pausedAuto, setPausedAuto] = useState(false);
 
   const visible = useMemo(() => {
     const start = page * perPage;
@@ -75,6 +77,8 @@ export default function Testimonials() {
   function handlePointerDown(e: React.PointerEvent) {
     startX.current = e.clientX;
     moved.current = false;
+    // pause autoplay while user interacts
+    setPausedAuto(true);
     try {
       (e.target as Element).setPointerCapture?.(e.pointerId);
     } catch {}
@@ -155,6 +159,8 @@ export default function Testimonials() {
     try {
       (e.target as Element).releasePointerCapture?.(e.pointerId);
     } catch {}
+    // resume autoplay after interaction
+    setPausedAuto(false);
   }
 
   // cleanup timers on unmount
@@ -209,6 +215,18 @@ export default function Testimonials() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
+  // autoplay: rotate pages circularly every interval when not paused
+  useEffect(() => {
+    const INTERVAL = 4500; // ms
+    if (pausedAuto) return;
+    if (totalPages <= 1) return;
+    const id = window.setInterval(() => {
+      setDirection("next");
+      setPage((p) => (p + 1) % totalPages);
+    }, INTERVAL);
+    return () => clearInterval(id);
+  }, [pausedAuto, totalPages]);
+
   return (
     <section
       aria-labelledby="testimonials-heading"
@@ -231,7 +249,11 @@ export default function Testimonials() {
           {/* controls moved to sit alongside the cards below */}
         </div>
 
-        <div className="overflow-hidden testimonials-wrap">
+        <div
+          className="overflow-hidden testimonials-wrap"
+          onMouseEnter={() => setPausedAuto(true)}
+          onMouseLeave={() => setPausedAuto(false)}
+        >
           {/* Row: cards (3) + inline controls */}
           <div className="flex items-start gap-6">
             <div className="flex-1">
@@ -265,12 +287,7 @@ export default function Testimonials() {
                   {visible.map((t, i) => (
                     <blockquote
                       key={`${t.name}-${page}-${i}`}
-                      className={`testimonial-card p-6 rounded-xl bg-white border shadow-sm ${
-                        direction === "next"
-                          ? "animate-slideInRight"
-                          : "animate-slideInLeft"
-                      }`}
-                      style={{ animationDelay: `${i * 0.12}s` }}
+                      className="testimonial-card p-6 rounded-xl bg-white border shadow-sm"
                     >
                       <div className="flex items-start gap-4">
                         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-800 font-semibold text-lg overflow-hidden testimonial-avatar">
