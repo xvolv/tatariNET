@@ -24,6 +24,7 @@ const testimonials = [
     role: "Product Lead, NetSavvy",
     rating: 4,
   },
+
   {
     quote:
       "Excellent SLAs and monitoring — incidents are much easier to resolve now.",
@@ -55,177 +56,17 @@ export default function Testimonials() {
   // autoplay state: cycles pages circularly; paused on hover or user interaction
   const [pausedAuto, setPausedAuto] = useState(false);
 
-  const visible = useMemo(() => {
-    const start = page * perPage;
-    return testimonials.slice(start, start + perPage);
-  }, [page]);
-
-  // drag / swipe support: pointer tracking
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const startX = useRef<number | null>(null);
-  const moved = useRef(false);
-  const SWIPE_THRESHOLD = 60; // px
-  const ATTEMPT_THRESHOLD = 20; // small nudge to start auto-attempts
-
-  // auto-advance attempt state
-  const autoAttempts = useRef(0);
-  const autoTimer = useRef<number | null>(null);
-  const lastAutoDir = useRef<"next" | "prev">("next");
-  const [autoTrying, setAutoTrying] = useState(false);
-  const MAX_AUTO_ATTEMPTS = 3;
-
-  function handlePointerDown(e: React.PointerEvent) {
-    startX.current = e.clientX;
-    moved.current = false;
-    // pause autoplay while user interacts
-    setPausedAuto(true);
-    try {
-      (e.target as Element).setPointerCapture?.(e.pointerId);
-    } catch {}
-  }
-
-  function handlePointerMove(e: React.PointerEvent) {
-    if (startX.current == null) return;
-    const dx = e.clientX - startX.current;
-    if (!moved.current && Math.abs(dx) > SWIPE_THRESHOLD) {
-      moved.current = true;
-      if (dx < 0) {
-        setDirection("next");
-        setPage((p) => Math.min(totalPages - 1, p + 1));
-      } else {
-        setDirection("prev");
-        setPage((p) => Math.max(0, p - 1));
-      }
+  const pages = useMemo(() => {
+    const out: Array<Array<(typeof testimonials)[number]>> = [];
+    for (let i = 0; i < testimonials.length; i += perPage) {
+      out.push(testimonials.slice(i, i + perPage));
     }
-  }
-
-  function scheduleAutoAttempt(dir: "next" | "prev") {
-    // clear any existing timer
-    stopAutoAttempts();
-    autoAttempts.current = 0;
-    lastAutoDir.current = dir;
-    setAutoTrying(true);
-
-    const attempt = () => {
-      autoAttempts.current += 1;
-      const desired =
-        dir === "next"
-          ? Math.min(totalPages - 1, page + 1)
-          : Math.max(0, page - 1);
-
-      if (desired === page) {
-        // can't move; retry until max
-        if (autoAttempts.current < MAX_AUTO_ATTEMPTS) {
-          autoTimer.current = window.setTimeout(attempt, 700);
-        } else {
-          stopAutoAttempts();
-        }
-      } else {
-        setDirection(dir);
-        setPage(desired);
-        stopAutoAttempts();
-      }
-    };
-
-    // first attempt after a short delay so the user sees the indicator
-    autoTimer.current = window.setTimeout(attempt, 700);
-  }
-
-  function stopAutoAttempts() {
-    if (autoTimer.current) {
-      clearTimeout(autoTimer.current);
-    }
-    autoTimer.current = null;
-    autoAttempts.current = 0;
-    setAutoTrying(false);
-  }
-
-  function endPointer(e: React.PointerEvent) {
-    // compute dx before clearing
-    const endX = e.clientX;
-    const sx = startX.current;
-    if (sx != null && !moved.current) {
-      const dx = endX - sx;
-      const adx = Math.abs(dx);
-      if (adx >= ATTEMPT_THRESHOLD && adx < SWIPE_THRESHOLD) {
-        // user nudged but didn't complete a swipe — start auto attempts
-        const dir = dx < 0 ? "next" : "prev";
-        scheduleAutoAttempt(dir);
-      }
-    }
-
-    startX.current = null;
-    moved.current = false;
-    try {
-      (e.target as Element).releasePointerCapture?.(e.pointerId);
-    } catch {}
-    // resume autoplay after interaction
-    setPausedAuto(false);
-  }
-
-  // cleanup timers on unmount
-  useEffect(() => {
-    return () => {
-      if (autoTimer.current) clearTimeout(autoTimer.current);
-    };
+    return out;
   }, []);
 
-  // preview hint: run a subtle preview slide a couple times to indicate more content
-  const previewAttempts = useRef(0);
-  const previewTimer = useRef<number | null>(null);
-  const [previewing, setPreviewing] = useState(false);
-  const PREVIEW_DELAY = 1400; // ms before first preview
-  const PREVIEW_REPEATS = 2;
+  const visible = pages[page] || [];
 
-  function startPreviewIfNeeded() {
-    // don't preview if user is interacting or no next page
-    if (autoTrying || page >= totalPages - 1) return;
-    // reset
-    stopPreview();
-    previewAttempts.current = 0;
-
-    const run = () => {
-      // do preview animation (toggle class)
-      setPreviewing(true);
-      previewTimer.current = window.setTimeout(() => {
-        setPreviewing(false);
-        previewAttempts.current += 1;
-        if (previewAttempts.current < PREVIEW_REPEATS) {
-          previewTimer.current = window.setTimeout(run, 900 + 400);
-        }
-      }, 900); // duration matches CSS 900ms
-    };
-
-    previewTimer.current = window.setTimeout(run, PREVIEW_DELAY);
-  }
-
-  function stopPreview() {
-    if (previewTimer.current) {
-      clearTimeout(previewTimer.current);
-    }
-    previewTimer.current = null;
-    previewAttempts.current = 0;
-    setPreviewing(false);
-  }
-
-  // start preview on mount and when page changes (only if there's content ahead)
-  useEffect(() => {
-    startPreviewIfNeeded();
-    return () => stopPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
-
-  // autoplay: rotate pages circularly every interval when not paused
-  useEffect(() => {
-    const INTERVAL = 4500; // ms
-    if (pausedAuto) return;
-    if (totalPages <= 1) return;
-    const id = window.setInterval(() => {
-      setDirection("next");
-      setPage((p) => (p + 1) % totalPages);
-    }, INTERVAL);
-    return () => clearInterval(id);
-  }, [pausedAuto, totalPages]);
+  // simplified: no autoplay, no pointer nudge/auto attempts — only click left/right
 
   return (
     <section
@@ -249,182 +90,106 @@ export default function Testimonials() {
           {/* controls moved to sit alongside the cards below */}
         </div>
 
-        <div
-          className="overflow-hidden testimonials-wrap"
-          onMouseEnter={() => setPausedAuto(true)}
-          onMouseLeave={() => setPausedAuto(false)}
-        >
+        <div className="overflow-hidden testimonials-wrap relative">
           {/* Row: cards (3) + inline controls */}
           <div className="flex items-start gap-6">
             <div className="flex-1">
               {/* key flips when page changes so child animations replay */}
               <div className="testimonials-viewport">
                 <div
-                  ref={containerRef}
-                  onPointerDown={(e) => {
-                    stopPreview();
-                    stopAutoAttempts();
-                    handlePointerDown(e);
-                  }}
-                  onPointerMove={(e) => {
-                    stopPreview();
-                    handlePointerMove(e);
-                  }}
-                  onPointerUp={(e) => {
-                    stopPreview();
-                    endPointer(e);
-                  }}
-                  onPointerCancel={(e) => {
-                    stopPreview();
-                    endPointer(e);
-                  }}
-                  key={page}
-                  className={`${
-                    previewing ? "animate-preview" : ""
-                  } grid gap-6 sm:grid-cols-2 lg:grid-cols-3`}
+                  className="testimonials-slider__viewport"
                   aria-live="polite"
                 >
-                  {visible.map((t, i) => (
-                    <blockquote
-                      key={`${t.name}-${page}-${i}`}
-                      className="testimonial-card p-6 rounded-xl bg-white border shadow-sm"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-800 font-semibold text-lg overflow-hidden testimonial-avatar">
-                          <span aria-hidden>
-                            {t.name.split(" ")[0].charAt(0)}
-                          </span>
-                        </div>
+                  <div
+                    className="testimonials-slider__inner"
+                    style={{
+                      width: `${pages.length * 100}%`,
+                      display: "flex",
+                      transition: "transform 600ms ease",
+                      transform: `translateX(-${(page * 100) / pages.length}%)`,
+                    }}
+                  >
+                    {pages.map((pg, pi) => (
+                      <div
+                        key={pi}
+                        className="testimonials-slider__page"
+                        style={{
+                          width: `${100 / pages.length}%`,
+                          paddingRight: "0",
+                          boxSizing: "border-box",
+                        }}
+                      >
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                          {pg.map((t, i) => (
+                            <blockquote
+                              key={`${t.name}-${pi}-${i}`}
+                              className="testimonial-card p-6 rounded-xl bg-white border shadow-sm"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-800 font-semibold text-lg overflow-hidden testimonial-avatar">
+                                  <span aria-hidden>
+                                    {t.name.split(" ")[0].charAt(0)}
+                                  </span>
+                                </div>
 
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <StarRating value={t.rating} />
-                              <div className="text-sm text-slate-600">
-                                {t.rating}.0
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <StarRating value={t.rating} />
+                                      <div className="text-sm text-slate-600">
+                                        {t.rating}.0
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <p className="mt-3 text-slate-700">
+                                    {t.quote}
+                                  </p>
+                                  <div className="mt-4 text-sm text-slate-600">
+                                    <div className="font-medium text-slate-900">
+                                      {t.name}
+                                    </div>
+                                    <div>{t.role}</div>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-
-                          <p className="mt-3 text-slate-700">{t.quote}</p>
-                          <div className="mt-4 text-sm text-slate-600">
-                            <div className="font-medium text-slate-900">
-                              {t.name}
-                            </div>
-                            <div>{t.role}</div>
-                          </div>
+                            </blockquote>
+                          ))}
                         </div>
                       </div>
-                    </blockquote>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* inline controls next to the 3 cards */}
-            <div className="flex flex-col items-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  stopAutoAttempts();
-                  setDirection("prev");
-                  setPage((p) => Math.max(0, p - 1));
-                }}
-                disabled={page === 0}
-                aria-label="Previous testimonials"
-                className={`w-10 h-10 rounded-full border flex items-center justify-center bg-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed`}
-              >
-                ‹
-              </button>
-
-              {/* auto-advance trigger indicator (pulses while trying) */}
-              <button
-                title="Auto-advance"
-                aria-label="Auto advance trigger"
-                onClick={() => {
-                  // if currently trying, cancel attempts and force a single advance
-                  stopAutoAttempts();
-                  const dir = lastAutoDir.current ?? "next";
-                  setDirection(dir);
-                  setPage((p) =>
-                    dir === "next"
-                      ? Math.min(totalPages - 1, p + 1)
-                      : Math.max(0, p - 1)
-                  );
-                }}
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
-                  autoTrying
-                    ? "bg-amber-100 ring-2 ring-amber-200 animate-pulse"
-                    : "bg-white"
-                }`}
-              >
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden
-                >
-                  <path
-                    d="M12 5v14M5 12h14"
-                    stroke={autoTrying ? "#d97706" : "#94a3b8"}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-
-              <div className="text-xs text-slate-500">
-                {page + 1}/{totalPages}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  stopAutoAttempts();
-                  setDirection("next");
-                  setPage((p) => Math.min(totalPages - 1, p + 1));
-                }}
-                disabled={page >= totalPages - 1}
-                aria-label="Next testimonials"
-                className={`w-10 h-10 rounded-full border flex items-center justify-center bg-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed`}
-              >
-                ›
-              </button>
-            </div>
+            {/* controls removed here — replaced by edge overlay buttons below */}
           </div>
 
-          {/* visible hint button on the right edge to indicate more */}
-          {page < totalPages - 1 && (
-            <button
-              onClick={() => {
-                stopPreview();
-                stopAutoAttempts();
-                setDirection("next");
-                setPage((p) => Math.min(totalPages - 1, p + 1));
-              }}
-              aria-label="See next testimonials"
-              className={`testimonials-hint ${
-                previewing ? "hint-animate" : ""
-              }`}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M9 6l6 6-6 6"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
+          {/* overlay left/right buttons (edge controls) */}
+          <button
+            type="button"
+            aria-label="Previous testimonials"
+            onClick={() => {
+              setDirection("prev");
+              setPage((p) => (p - 1 + totalPages) % totalPages);
+            }}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border bg-white flex items-center justify-center shadow-sm hover:opacity-90"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            aria-label="Next testimonials"
+            onClick={() => {
+              setDirection("next");
+              setPage((p) => (p + 1) % totalPages);
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border bg-white flex items-center justify-center shadow-sm hover:opacity-90"
+          >
+            ›
+          </button>
         </div>
       </div>
     </section>
