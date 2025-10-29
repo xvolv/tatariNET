@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="AWS">
+	<!-- AWS chip-optimized artwork: larger wordmark and orange smile -->
+	<rect width="24" height="24" fill="none"/>
+	<g fill="#111111" font-family="Inter, Roboto, Arial, Helvetica, sans-serif" font-weight="700" font-size="7">
+		<text x="12" y="9.5" text-anchor="middle">aws</text>
+	</g>
+	<path d="M4 16c4-2 8-3 12 0" fill="none" stroke="#FF9900" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
