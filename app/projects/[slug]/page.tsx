@@ -199,20 +199,27 @@ export default async function ProjectDetail({ params }: Props) {
               Visual walkthrough — screenshots and details.
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {galleryImages.map((src) => (
-                <figure
-                  key={src}
-                  className="overflow-hidden rounded-md bg-slate-50"
-                >
-                  <img
-                    src={src}
-                    alt={`${project.title} screenshot`}
-                    className="w-full h-40 object-cover"
-                    loading="lazy"
-                  />
-                </figure>
-              ))}
+            <div className="flex flex-col">
+              {galleryImages.map((src, idx) => {
+                const fileName = src.split("/").pop();
+                return (
+                  <figure
+                    key={src}
+                    className="mb-6 bg-white border rounded-xl overflow-hidden"
+                  >
+                    <img
+                      src={src}
+                      alt={`${project.title} screenshot ${idx + 1}`}
+                      className="w-full h-[420px] object-cover"
+                      loading="lazy"
+                    />
+
+                    <figcaption className="p-4 text-sm text-slate-600">
+                      {fileName}
+                    </figcaption>
+                  </figure>
+                );
+              })}
             </div>
           </section>
         )}
