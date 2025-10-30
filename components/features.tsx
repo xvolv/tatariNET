@@ -34,18 +34,20 @@ export default function Features() {
           {/* Right Card */}
           <div className="bg-white rounded-3xl p-8 shadow-lg animate-slideInRight hover:shadow-2xl transition-all duration-300">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Developer Resources
+              Consulting
             </h2>
             <p className="text-gray-600 mb-6">
-              Find quickstarts, SDKs, API references, and integration guides to
-              help your team build on TatariNET. Browse architecture guides,
-              examples, and community tools to accelerate development.
+              We're preparing a consulting program with practical advice on
+              freelancing, finding clients, pricing, and running a successful
+              client services business. This will include guides like how to win
+              work on platforms such as Upwork, how to price projects, and how
+              to build a reliable pipeline.
             </p>
             <a
-              href="/resources"
+              href="/consulting"
               className="bg-primary hover:opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all hover:scale-105 inline-block"
             >
-              Explore Resources →
+              join Consulting →
             </a>
           </div>
         </div>

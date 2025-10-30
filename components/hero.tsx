@@ -17,23 +17,6 @@ export default function Hero() {
           fully launched solution, with a steadfast commitment to quality,
           clarity, and timeliness.
         </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp stagger-2">
-          <Link href="/about" className="inline-block">
-            <Button className="bg-primary hover:opacity-90 text-white px-8 py-4 text-lg transition-all hover:scale-105">
-              Work with our team
-            </Button>
-          </Link>
-
-          <Link href="/projects" className="inline-block">
-            <Button
-              variant="outline"
-              className="border-2 border-primary text-primary hover:opacity-95 px-8 py-4 text-lg bg-transparent transition-all hover:scale-105"
-            >
-              See Case Studies
-            </Button>
-          </Link>
-        </div>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@
 
 export default function CTA() {
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+    <section id="about" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="grid gap-8 md:grid-cols-2 items-center">
           <div>

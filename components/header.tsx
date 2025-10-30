@@ -10,44 +10,51 @@ export default function Header() {
   const pathname = usePathname();
 
   async function handleServicesClick(e: React.MouseEvent) {
-    e.preventDefault();
-    // If already on home, just smooth-scroll to the section
+    // If already on home, intercept to smooth-scroll to the section
     if (pathname === "/") {
+      e.preventDefault();
       const el = document.getElementById("services");
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
-        window.history.replaceState(null, "", "/#services");
       }
       return;
     }
 
-    // Not on home: navigate to home then scroll after brief delay
+    // Not on home: navigate to home, then scroll after a short delay
+    e.preventDefault();
     await router.push("/");
-    // small delay to allow content to mount
     setTimeout(() => {
       const el = document.getElementById("services");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        window.history.replaceState(null, "", "/#services");
-      }
-    }, 80);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
   }
 
-  async function handleHomeClick(e: React.MouseEvent) {
-    e.preventDefault();
-    // If already on home, smooth-scroll to top
+  function handleHomeClick(e: React.MouseEvent) {
+    // If already on home, intercept to smooth-scroll to top
     if (pathname === "/") {
+      e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
-      window.history.replaceState(null, "", "/");
+      return;
+    }
+    // Otherwise allow Link to handle navigation normally
+  }
+
+  async function handleAboutClick(e: React.MouseEvent) {
+    // If already on home, smooth-scroll to the CTA/about section
+    if (pathname === "/") {
+      e.preventDefault();
+      const el = document.getElementById("about");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
 
-    // Not on home: navigate to home then scroll after brief delay
+    // Not on home: navigate to home, then scroll to the about section
+    e.preventDefault();
     await router.push("/");
     setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      window.history.replaceState(null, "", "/");
-    }, 80);
+      const el = document.getElementById("about");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
   }
 
   return (
@@ -73,7 +80,11 @@ export default function Header() {
           <div className="flex justify-between items-center h-">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <a href="/" aria-label="TatariNET home" onClick={handleHomeClick}>
+              <Link
+                href="/"
+                aria-label="TatariNET home"
+                onClick={handleHomeClick}
+              >
                 <Image
                   src="/logo.png"
                   alt="TatariNET"
@@ -81,18 +92,18 @@ export default function Header() {
                   height={40}
                   className="h-22 w-auto"
                 />
-              </a>
+              </Link>
             </div>
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-8">
-              <a
+              <Link
                 href="/"
                 onClick={handleHomeClick}
                 className="text-gray-700 hover:text-gray-900 font-medium"
               >
                 Home
-              </a>
+              </Link>
               <a
                 href="/#services"
                 onClick={handleServicesClick}
@@ -122,12 +133,13 @@ export default function Header() {
                 Projects
               </a>
 
-              <Link
-                href="#"
+              <a
+                href="/#about"
+                onClick={handleAboutClick}
                 className="text-gray-700 hover:text-gray-900 font-medium"
               >
                 About
-              </Link>
+              </a>
               <Link
                 href="#"
                 className="text-gray-700 hover:text-gray-900 font-medium"
