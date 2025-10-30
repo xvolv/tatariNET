@@ -35,6 +35,60 @@ export const PROJECTS: Project[] = [
     stack: ["Next.js", "D3", "Python"],
     year: 2025,
   },
+  {
+    slug: "marketflow",
+    title: "MarketFlow",
+    short: "A demand forecasting and inventory optimization platform.",
+    description:
+      "MarketFlow uses time-series forecasting and optimization to help merchants keep the right inventory levels and reduce stockouts.",
+    stack: ["Next.js", "TensorFlow", "Postgres", "Redis"],
+    year: 2024,
+  },
+  {
+    slug: "healthsync",
+    title: "HealthSync",
+    short: "Interoperable patient data sync for clinics.",
+    description:
+      "HealthSync securely synchronizes patient records across clinics and devices, prioritizing privacy and auditability.",
+    stack: ["React", "Node.js", "GraphQL", "MongoDB"],
+    year: 2022,
+  },
+  {
+    slug: "eduspark",
+    title: "EduSpark",
+    short: "Microlearning platform for distributed teams.",
+    description:
+      "EduSpark delivers short, interactive learning experiences with progress tracking and team analytics.",
+    stack: ["Next.js", "React", "Supabase"],
+    year: 2025,
+  },
+  {
+    slug: "greencart",
+    title: "GreenCart",
+    short: "Sustainable grocery delivery with local sourcing.",
+    description:
+      "GreenCart connects consumers with local sustainable farms for same-day grocery delivery and low-waste packaging.",
+    stack: ["Next.js", "React", "Stripe"],
+    year: 2024,
+  },
+  {
+    slug: "paypilot",
+    title: "PayPilot",
+    short: "Embedded payments and payouts for marketplaces.",
+    description:
+      "PayPilot provides an easy SDK to onboard sellers, handle payouts, and manage split payments for marketplace platforms.",
+    stack: ["Node.js", "Stripe", "Postgres"],
+    year: 2023,
+  },
+  {
+    slug: "studiobeam",
+    title: "StudioBeam",
+    short: "Lightweight media collaboration for creators.",
+    description:
+      "StudioBeam helps creators upload, annotate, and share video edits with collaborators using fast previews and secure links.",
+    stack: ["React", "Vercel", "S3"],
+    year: 2025,
+  },
 ];
 
 export function getProjectBySlug(slug: string) {

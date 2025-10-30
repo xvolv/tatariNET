@@ -198,9 +198,6 @@ function GroupedTechRotator({
                 display: "flex",
                 gap: `${gapPx}px`,
                 alignItems: "center",
-            
-
-                borderBottom: "4px solid cyan",
                 padding: "5px",
               }}
             >

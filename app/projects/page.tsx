@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PROJECTS } from "@/lib/projects";
+import OrchestratedGrid from "@/components/orchestrated-grid";
 
 export const metadata = {
   title: "Projects — TatariNET",
@@ -17,27 +18,7 @@ export default function ProjectsPage() {
           </p>
         </header>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {PROJECTS.map((p) => (
-            <article
-              key={p.slug}
-              className="rounded-xl border bg-white p-6 shadow-sm"
-            >
-              <h2 className="text-xl font-semibold mb-2">{p.title}</h2>
-              <p className="text-sm text-slate-600 mb-4">{p.short}</p>
-
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-slate-500">{p.year}</div>
-                <Link
-                  href={`/projects/${p.slug}`}
-                  className="text-primary font-medium"
-                >
-                  View details →
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+        <OrchestratedGrid items={PROJECTS} />
       </div>
     </main>
   );

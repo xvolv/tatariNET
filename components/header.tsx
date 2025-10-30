@@ -100,12 +100,27 @@ export default function Header() {
               >
                 Services
               </a>
-              <Link
+              <a
                 href="/projects"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (pathname === "/projects") {
+                    // replay animation on the projects page
+                    window.dispatchEvent(new CustomEvent("projects:replay"));
+                    return;
+                  }
+                  await router.push("/projects");
+                  // small delay to allow projects component to mount, then trigger animation
+                  setTimeout(
+                    () =>
+                      window.dispatchEvent(new CustomEvent("projects:replay")),
+                    120
+                  );
+                }}
                 className="text-gray-700 hover:text-gray-900 font-medium"
               >
                 Projects
-              </Link>
+              </a>
 
               <Link
                 href="#"
