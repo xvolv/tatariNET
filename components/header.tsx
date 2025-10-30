@@ -146,7 +146,7 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <Link
                 href="/contact"
-                className="text-gray-700 hover:text-gray-900 font-medium"
+                className="text-gray-700 hover:text-gray-900 font-medium border-2 border-transparent"
               >
                 Contact
               </Link>
