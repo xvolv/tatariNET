@@ -140,25 +140,21 @@ export default function Header() {
               >
                 About
               </a>
-              <Link
-                href="#"
-                className="text-gray-700 hover:text-gray-900 font-medium"
-              >
-                FAQs
-              </Link>
             </nav>
 
             {/* Right Actions */}
             <div className="flex items-center gap-4">
               <Link
-                href="#"
+                href="/contact"
                 className="text-gray-700 hover:text-gray-900 font-medium"
               >
-                Log in
+                Contact
               </Link>
-              <Button className="bg-primary hover:opacity-90 text-white">
-                Get Started →
-              </Button>
+              <Link href="/consulting" className="inline-block">
+                <Button className="bg-primary hover:opacity-90 text-white focus-visible:ring-0 focus:outline-none transition-none active:scale-100">
+                  Join Consulting →
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
