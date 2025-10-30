@@ -91,6 +91,12 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-export function getProjectBySlug(slug: string) {
-  return PROJECTS.find((p) => p.slug === slug) || null;
+export function getProjectBySlug(slug?: string | null) {
+  // Defensive normalization: accept undefined/null and normalize to an empty string.
+  const normalize = (s?: string | null) =>
+    String(s ?? "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+  const target = normalize(slug);
+  return PROJECTS.find((p) => normalize(p.slug) === target) || null;
 }

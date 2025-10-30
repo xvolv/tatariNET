@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+// Use plain anchors for detail links to avoid navigation issues during the animation overlay
 import type { Project } from "@/lib/projects";
 
 type Props = {
@@ -19,6 +19,21 @@ export default function OrchestratedGrid({
   const [clones, setClones] = useState<Array<any>>([]);
   const [clonesVisible, setClonesVisible] = useState(false);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  // track images that failed to load so we can fall back to the SVG placeholder
+  const [imgMissing, setImgMissing] = useState<Record<number, boolean>>({});
+  // track preloaded images so the clone animation can show the same preview
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+
+  // Preload dashboard/preview images for each project so clones can use them during animation
+  useEffect(() => {
+    items.forEach((p) => {
+      const url = `/project_showcase/${p.slug}/dashboard.jpg`;
+      const img = new Image();
+      img.src = url;
+      img.onload = () => setLoadedImages((s) => ({ ...s, [p.slug]: true }));
+      img.onerror = () => setLoadedImages((s) => ({ ...s, [p.slug]: false }));
+    });
+  }, [items]);
 
   useEffect(() => {
     // helper to start the animation so we can replay
@@ -166,37 +181,47 @@ export default function OrchestratedGrid({
           >
             {/* Placeholder image block to increase vertical size */}
             <div className="w-full h-40 bg-slate-100 rounded-md mb-4 flex items-center justify-center overflow-hidden">
-              <svg
-                width="90"
-                height="56"
-                viewBox="0 0 90 56"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect width="90" height="56" rx="6" fill="#e6eef8" />
-                <text
-                  x="50%"
-                  y="50%"
-                  dominantBaseline="middle"
-                  textAnchor="middle"
-                  fill="#94a3b8"
-                  fontSize="10"
+              {!imgMissing[i] ? (
+                <img
+                  src={`/project_showcase/${p.slug}/dashboard.jpg`}
+                  alt={`${p.title} dashboard`}
+                  className="w-full h-40 object-cover"
+                  loading="lazy"
+                  onError={() => setImgMissing((s) => ({ ...s, [i]: true }))}
+                />
+              ) : (
+                <svg
+                  width="90"
+                  height="56"
+                  viewBox="0 0 90 56"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  Image
-                </text>
-              </svg>
+                  <rect width="90" height="56" rx="6" fill="#e6eef8" />
+                  <text
+                    x="50%"
+                    y="50%"
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                    fill="#94a3b8"
+                    fontSize="10"
+                  >
+                    Image
+                  </text>
+                </svg>
+              )}
             </div>
 
             <h2 className="text-xl font-semibold mb-2">{p.title}</h2>
             <p className="text-sm text-slate-600 mb-4">{p.short}</p>
             <div className="flex items-center justify-between">
               <div className="text-xs text-slate-500">{p.year}</div>
-              <Link
+              <a
                 href={`/projects/${p.slug}`}
                 className="text-primary font-medium"
               >
                 View details →
-              </Link>
+              </a>
             </div>
           </article>
         ))}
@@ -257,27 +282,40 @@ export default function OrchestratedGrid({
                     alignItems: "center",
                     justifyContent: "center",
                     marginBottom: 12,
+                    overflow: "hidden",
                   }}
                 >
-                  <svg
-                    width="120"
-                    height="80"
-                    viewBox="0 0 120 80"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect width="120" height="80" rx="8" fill="#e6eef8" />
-                    <text
-                      x="50%"
-                      y="50%"
-                      dominantBaseline="middle"
-                      textAnchor="middle"
-                      fill="#94a3b8"
-                      fontSize="12"
+                  {loadedImages[p.slug] ? (
+                    <img
+                      src={`/project_showcase/${p.slug}/dashboard.jpg`}
+                      alt={`${p.title} dashboard`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <svg
+                      width="120"
+                      height="80"
+                      viewBox="0 0 120 80"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      Image
-                    </text>
-                  </svg>
+                      <rect width="120" height="80" rx="8" fill="#e6eef8" />
+                      <text
+                        x="50%"
+                        y="50%"
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                        fill="#94a3b8"
+                        fontSize="12"
+                      >
+                        Image
+                      </text>
+                    </svg>
+                  )}
                 </div>
                 <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
                   {p.title}
