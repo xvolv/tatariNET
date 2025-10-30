@@ -17,7 +17,7 @@ export default function ContactPage() {
       `Name: ${fullName}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`
     );
     // Open default mail client with prefilled subject/body
-    window.location.href = `mailto:hello@tatarinet.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:tattarinet@gmail.com?subject=${subject}&body=${body}`;
   }
 
   return (
