@@ -216,13 +216,26 @@ export default function OrchestratedGrid({
             onMouseLeave={() => setHoverIdx(null)}
           >
             {/* Placeholder image block to increase vertical size */}
-            <div className="w-full h-40 bg-slate-100 rounded-md mb-4 flex items-center justify-center overflow-hidden">
+            <div className="w-full h-40 bg-slate-100 rounded-md mb-4 relative overflow-hidden">
               {previewBySlug[p.slug] ? (
                 <img
                   src={previewBySlug[p.slug]}
                   alt={`${p.title} preview`}
                   className="w-full h-40 object-cover"
                   loading="lazy"
+                  style={{
+                    transition: "filter 220ms ease, transform 220ms ease",
+                    filter:
+                      p.status === "coming-soon"
+                        ? `${
+                            hoverIdx === i ? "blur(3px)" : "blur(6px)"
+                          } brightness(0.72)`
+                        : "",
+                    transform:
+                      p.status === "coming-soon" && hoverIdx === i
+                        ? "scale(1.01)"
+                        : "",
+                  }}
                 />
               ) : (
                 <svg
@@ -244,6 +257,85 @@ export default function OrchestratedGrid({
                     Image
                   </text>
                 </svg>
+              )}
+
+              {/* Dim overlay for coming-soon */}
+              {p.status === "coming-soon" && (
+                <div
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "rgba(0,0,0,0.18)",
+                    transition: "background 220ms ease",
+                  }}
+                />
+              )}
+
+              {/* Diagonal ribbon */}
+              {p.status === "coming-soon" && (
+                <div
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    left: "-30%",
+                    top: 8,
+                    transform: "rotate(-30deg)",
+                    width: "160%",
+                    display: "flex",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    zIndex: 20,
+                  }}
+                >
+                  <div
+                    style={{
+                      background: "rgba(250, 204, 21, 0.92)",
+                      color: "#000",
+                      padding: "6px 28px",
+                      fontWeight: 700,
+                      letterSpacing: "0.12em",
+                      boxShadow: "0 6px 18px rgba(2,6,23,0.08)",
+                      borderRadius: 4,
+                      fontSize: 12,
+                    }}
+                  >
+                    COMING SOON
+                  </div>
+                </div>
+              )}
+
+              {/* Lock icon bottom-right */}
+              {p.status === "coming-soon" && (
+                <div
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    right: 8,
+                    bottom: 8,
+                    zIndex: 30,
+                    background: "rgba(255,255,255,0.9)",
+                    borderRadius: 6,
+                    padding: 6,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 6px 18px rgba(2,6,23,0.06)",
+                  }}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M17 8h-1V6a4 4 0 10-8 0v2H7a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V9a1 1 0 00-1-1zm-7-2a2 2 0 114 0v2h-4V6z"
+                      fill="#0f172a"
+                    />
+                  </svg>
+                </div>
               )}
             </div>
 
@@ -331,6 +423,7 @@ export default function OrchestratedGrid({
                     justifyContent: "center",
                     marginBottom: 12,
                     overflow: "hidden",
+                    position: "relative",
                   }}
                 >
                   {previewBySlug[p.slug] ? (
@@ -341,6 +434,11 @@ export default function OrchestratedGrid({
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
+                        transition: "filter 220ms ease, transform 220ms ease",
+                        filter:
+                          p.status === "coming-soon"
+                            ? "blur(6px) brightness(0.72)"
+                            : "",
                       }}
                     />
                   ) : (
@@ -363,6 +461,82 @@ export default function OrchestratedGrid({
                         Image
                       </text>
                     </svg>
+                  )}
+
+                  {p.status === "coming-soon" && (
+                    <div
+                      aria-hidden
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "rgba(0,0,0,0.18)",
+                        zIndex: 10,
+                      }}
+                    />
+                  )}
+
+                  {p.status === "coming-soon" && (
+                    <div
+                      aria-hidden
+                      style={{
+                        position: "absolute",
+                        left: "-30%",
+                        top: 12,
+                        transform: "rotate(-30deg)",
+                        width: "160%",
+                        display: "flex",
+                        justifyContent: "center",
+                        pointerEvents: "none",
+                        zIndex: 20,
+                      }}
+                    >
+                      <div
+                        style={{
+                          background: "rgba(250, 204, 21, 0.92)",
+                          color: "#000",
+                          padding: "6px 28px",
+                          fontWeight: 700,
+                          letterSpacing: "0.12em",
+                          boxShadow: "0 6px 18px rgba(2,6,23,0.08)",
+                          borderRadius: 4,
+                          fontSize: 12,
+                        }}
+                      >
+                        COMING SOON
+                      </div>
+                    </div>
+                  )}
+
+                  {p.status === "coming-soon" && (
+                    <div
+                      aria-hidden
+                      style={{
+                        position: "absolute",
+                        right: 8,
+                        bottom: 8,
+                        zIndex: 30,
+                        background: "rgba(255,255,255,0.9)",
+                        borderRadius: 6,
+                        padding: 6,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 6px 18px rgba(2,6,23,0.06)",
+                      }}
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M17 8h-1V6a4 4 0 10-8 0v2H7a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V9a1 1 0 00-1-1zm-7-2a2 2 0 114 0v2h-4V6z"
+                          fill="#0f172a"
+                        />
+                      </svg>
+                    </div>
                   )}
                 </div>
                 <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>

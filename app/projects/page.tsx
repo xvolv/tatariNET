@@ -47,6 +47,19 @@ export default async function ProjectsPage() {
 
   for (const p of PROJECTS) {
     try {
+      // If project specifies an explicit previewFolder, prefer it (useful when folder names differ from slugs)
+      if ((p as any).previewFolder) {
+        const pf = String((p as any).previewFolder);
+        if (entries.includes(pf)) {
+          const dir = path.join(showcaseDir, pf);
+          const files = await fs.readdir(dir);
+          const img = files.find((f) => /\.(jpe?g|png|gif|svg)$/i.test(f));
+          if (img) {
+            previewMap[p.slug] = `/project_showcase/${pf}/${img}`;
+            continue;
+          }
+        }
+      }
       const pNorm = normalize(p.slug);
 
       // find best matching folder name inside public/project_showcase

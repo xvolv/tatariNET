@@ -10,65 +10,48 @@ export default function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4">TatariNET</h3>
             <p className="text-gray-400 text-sm">
-              Leading network infrastructure solutions for modern businesses.
+              Engineering teams that build production-grade web products.
             </p>
           </div>
+
           <div>
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>
-                <a href="#" className="hover:text-white">
+                <a href="/#features" className="hover:text-white">
                   Features
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Pricing
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Security
                 </a>
               </li>
             </ul>
           </div>
+
           <div>
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>
-                <a href="#" className="hover:text-white">
+                <a href="/#about" className="hover:text-white">
                   About
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white">
-                  Blog
+                <a href="/projects" className="hover:text-white">
+                  Projects
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white">
+                <a href="/contact" className="hover:text-white">
                   Contact
                 </a>
               </li>
             </ul>
           </div>
+
           <div>
-            <h4 className="font-semibold mb-4">Legal</h4>
+            <h4 className="font-semibold mb-4">Resources</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>
-                <a href="#" className="hover:text-white">
-                  Privacy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Terms
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Cookies
+                <a href="/consulting" className="hover:text-white">
+                  Consulting
                 </a>
               </li>
             </ul>

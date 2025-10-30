@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 
 export default function Features() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-primary to-primary-dark">
+    <section
+      id="features"
+      className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-primary to-primary-dark"
+    >
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Card (replaced by "Why TatariNET") */}

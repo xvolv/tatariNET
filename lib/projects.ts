@@ -10,6 +10,8 @@ export type Project = {
   // optional display title (override) and status for UI
   displayTitle?: string;
   status?: "coming-soon" | "ongoing";
+  // optional explicit preview folder in public/project_showcase (overrides fuzzy detection)
+  previewFolder?: string;
 };
 
 export const PROJECTS: Project[] = [
@@ -41,6 +43,7 @@ export const PROJECTS: Project[] = [
     year: 2025,
     displayTitle: "Analytics Studio",
     status: "coming-soon",
+    previewFolder: "analytics",
   },
   {
     slug: "marketflow",
@@ -52,6 +55,7 @@ export const PROJECTS: Project[] = [
     year: 2024,
     displayTitle: "InventoryIQ",
     status: "coming-soon",
+    previewFolder: "inventoryiq",
   },
   {
     slug: "healthsync",
@@ -78,6 +82,7 @@ export const PROJECTS: Project[] = [
     // show as coming soon and use a less-specific display name
     displayTitle: "Learning Labs",
     status: "coming-soon",
+    previewFolder: "learninglabs",
   },
   // removed: GreenCart, PayPilot, StudioBeam (per request)
 ];
