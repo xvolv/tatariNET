@@ -7,6 +7,9 @@ export type Project = {
   year?: number;
   // optional notes to show on the project detail page
   notes?: string[];
+  // optional display title (override) and status for UI
+  displayTitle?: string;
+  status?: "coming-soon" | "ongoing";
 };
 
 export const PROJECTS: Project[] = [
@@ -36,6 +39,8 @@ export const PROJECTS: Project[] = [
       "Insightly provides privacy-first analytics and dashboards aimed at product teams who want quick insights without heavy instrumentation.",
     stack: ["Next.js", "D3", "Python"],
     year: 2025,
+    displayTitle: "Analytics Studio",
+    status: "coming-soon",
   },
   {
     slug: "marketflow",
@@ -45,6 +50,8 @@ export const PROJECTS: Project[] = [
       "MarketFlow uses time-series forecasting and optimization to help merchants keep the right inventory levels and reduce stockouts.",
     stack: ["Next.js", "TensorFlow", "Postgres", "Redis"],
     year: 2024,
+    displayTitle: "InventoryIQ",
+    status: "coming-soon",
   },
   {
     slug: "healthsync",
@@ -68,6 +75,9 @@ export const PROJECTS: Project[] = [
       "EduSpark delivers short, interactive learning experiences with progress tracking and team analytics.",
     stack: ["Next.js", "React", "Supabase"],
     year: 2025,
+    // show as coming soon and use a less-specific display name
+    displayTitle: "Learning Labs",
+    status: "coming-soon",
   },
   // removed: GreenCart, PayPilot, StudioBeam (per request)
 ];

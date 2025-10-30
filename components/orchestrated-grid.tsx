@@ -247,16 +247,29 @@ export default function OrchestratedGrid({
               )}
             </div>
 
-            <h2 className="text-xl font-semibold mb-2">{p.title}</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {p.displayTitle || p.title}
+              {p.status && (
+                <span className="ml-2 inline-block text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                  {p.status === "coming-soon" ? "Coming soon" : "Ongoing"}
+                </span>
+              )}
+            </h2>
             <p className="text-sm text-slate-600 mb-4">{p.short}</p>
             <div className="flex items-center justify-between">
               <div className="text-xs text-slate-500">{p.year}</div>
-              <a
-                href={`/projects/${p.slug}`}
-                className="text-primary font-medium"
-              >
-                View details →
-              </a>
+              {p.status === "coming-soon" ? (
+                <span className="text-sm text-slate-400 font-medium">
+                  Coming soon
+                </span>
+              ) : (
+                <a
+                  href={`/projects/${p.slug}`}
+                  className="text-primary font-medium"
+                >
+                  View details →
+                </a>
+              )}
             </div>
           </article>
         ))}
@@ -353,7 +366,7 @@ export default function OrchestratedGrid({
                   )}
                 </div>
                 <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
-                  {p.title}
+                  {p.displayTitle || p.title}
                 </h3>
                 <p style={{ marginTop: 8, color: "#64748b", flex: 1 }}>
                   {p.short}
