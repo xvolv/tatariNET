@@ -19,21 +19,47 @@ export default function OrchestratedGrid({
   const [clones, setClones] = useState<Array<any>>([]);
   const [clonesVisible, setClonesVisible] = useState(false);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  // track images that failed to load so we can fall back to the SVG placeholder
-  const [imgMissing, setImgMissing] = useState<Record<number, boolean>>({});
-  // track preloaded images so the clone animation can show the same preview
-  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  // track chosen preview image URL per project slug (e.g. '/project_showcase/servemart/dashboard.jpg')
+  const [previewBySlug, setPreviewBySlug] = useState<Record<string, string>>(
+    {}
+  );
 
-  // Preload dashboard/preview images for each project so clones can use them during animation
+  // Preload candidate preview images for each project so clones can use them during animation.
+  // Try several common filenames in order and pick the first that loads.
   useEffect(() => {
+    const candidates = [
+      "dashboard.jpg",
+      "preview.jpg",
+      "cover.jpg",
+      "one.jpg",
+      "two.jpg",
+      "preview.png",
+    ];
+
     items.forEach((p) => {
-      const url = `/project_showcase/${p.slug}/dashboard.jpg`;
-      const img = new Image();
-      img.src = url;
-      img.onload = () => setLoadedImages((s) => ({ ...s, [p.slug]: true }));
-      img.onerror = () => setLoadedImages((s) => ({ ...s, [p.slug]: false }));
+      // don't reload if we already found one
+      if (previewBySlug[p.slug]) return;
+
+      (async () => {
+        for (const name of candidates) {
+          const url = `/project_showcase/${p.slug}/${name}`;
+          try {
+            await new Promise<void>((resolve, reject) => {
+              const img = new Image();
+              img.src = url;
+              img.onload = () => resolve();
+              img.onerror = () => reject();
+            });
+            // success — store and stop
+            setPreviewBySlug((s) => ({ ...s, [p.slug]: url }));
+            break;
+          } catch (e) {
+            // try next candidate
+          }
+        }
+      })();
     });
-  }, [items]);
+  }, [items, previewBySlug]);
 
   useEffect(() => {
     // helper to start the animation so we can replay
@@ -181,13 +207,12 @@ export default function OrchestratedGrid({
           >
             {/* Placeholder image block to increase vertical size */}
             <div className="w-full h-40 bg-slate-100 rounded-md mb-4 flex items-center justify-center overflow-hidden">
-              {!imgMissing[i] ? (
+              {previewBySlug[p.slug] ? (
                 <img
-                  src={`/project_showcase/${p.slug}/dashboard.jpg`}
-                  alt={`${p.title} dashboard`}
+                  src={previewBySlug[p.slug]}
+                  alt={`${p.title} preview`}
                   className="w-full h-40 object-cover"
                   loading="lazy"
-                  onError={() => setImgMissing((s) => ({ ...s, [i]: true }))}
                 />
               ) : (
                 <svg
@@ -285,10 +310,10 @@ export default function OrchestratedGrid({
                     overflow: "hidden",
                   }}
                 >
-                  {loadedImages[p.slug] ? (
+                  {previewBySlug[p.slug] ? (
                     <img
-                      src={`/project_showcase/${p.slug}/dashboard.jpg`}
-                      alt={`${p.title} dashboard`}
+                      src={previewBySlug[p.slug]}
+                      alt={`${p.title} preview`}
                       style={{
                         width: "100%",
                         height: "100%",

@@ -5,6 +5,8 @@ export type Project = {
   description: string;
   stack: string[];
   year?: number;
+  // optional notes to show on the project detail page
+  notes?: string[];
 };
 
 export const PROJECTS: Project[] = [
@@ -52,6 +54,11 @@ export const PROJECTS: Project[] = [
       "HealthSync securely synchronizes patient records across clinics and devices, prioritizing privacy and auditability.",
     stack: ["React", "Node.js", "GraphQL", "MongoDB"],
     year: 2022,
+    notes: [
+      "Built secure sync adapters for FHIR-compatible clinics.",
+      "End-to-end encryption for data in transit and at rest.",
+      "Audit logs and role-based access controls for compliance.",
+    ],
   },
   {
     slug: "eduspark",

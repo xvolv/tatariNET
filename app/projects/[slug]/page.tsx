@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProjectBySlug, PROJECTS } from "@/lib/projects";
+import { promises as fs } from "fs";
+import path from "path";
 
 type Props = {
   params: { slug?: string } | Promise<{ slug?: string }>;
@@ -54,6 +56,24 @@ export default async function ProjectDetail({ params }: Props) {
     );
   }
 
+  // Server-side: discover gallery images under public/project_showcase/{slug}
+  let galleryImages: string[] = [];
+  try {
+    const dir = path.join(
+      process.cwd(),
+      "public",
+      "project_showcase",
+      project.slug
+    );
+    const files = await fs.readdir(dir);
+    galleryImages = files
+      .filter((f) => /\.(jpe?g|png|gif|svg)$/i.test(f))
+      .sort()
+      .map((f) => `/project_showcase/${project.slug}/${f}`);
+  } catch (e) {
+    // no gallery folder or read error — leave galleryImages empty
+  }
+
   return (
     <main className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -61,6 +81,17 @@ export default async function ProjectDetail({ params }: Props) {
           <h1 className="text-3xl font-bold text-slate-900">{project.title}</h1>
           <p className="text-sm text-slate-600 mt-2">{project.year}</p>
         </header>
+
+        {/* Top preview image (dashboard/preview) if present in project_showcase */}
+        <div className="mb-6">
+          <img
+            src={`/project_showcase/${project.slug}/dashboard.jpg`}
+            alt={`${project.title} preview`}
+            className="w-full rounded-xl object-cover h-56"
+            style={{ objectFit: "cover" }}
+            loading="lazy"
+          />
+        </div>
 
         <section className="bg-white border rounded-xl p-6">
           <p className="text-slate-700 mb-4">{project.description}</p>
@@ -80,32 +111,41 @@ export default async function ProjectDetail({ params }: Props) {
           </div>
         </section>
 
+        {/* Notes (if any) */}
+        {project.notes && project.notes.length > 0 && (
+          <section className="mt-6 bg-white border rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-3">Notes</h3>
+            <ul className="list-disc pl-6 text-slate-700">
+              {project.notes.map((n, idx) => (
+                <li key={idx} className="mb-1">
+                  {n}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/* View detail / project images (project-specific gallery) */}
-        {project.slug === "servemart" && (
+        {/* Dynamically list images from public/project_showcase/{slug} if present */}
+        {/* View detail / project images (project-specific gallery) */}
+        {typeof galleryImages !== "undefined" && galleryImages.length > 0 && (
           <section className="mt-6 bg-white border rounded-xl p-6">
             <h3 className="text-lg font-semibold mb-4">
               Project details & screenshots
             </h3>
             <p className="text-sm text-slate-600 mb-4">
-              Visual walkthrough of ServeMart — screenshots from the prototype
-              and staging environment.
+              Visual walkthrough — screenshots and details.
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {[
-                "calander.jpg",
-                "dashboard.jpg",
-                "earnings.jpg",
-                "myjobs.jpg",
-                "settings.jpg",
-              ].map((name) => (
+              {galleryImages.map((src) => (
                 <figure
-                  key={name}
+                  key={src}
                   className="overflow-hidden rounded-md bg-slate-50"
                 >
                   <img
-                    src={`/project_showcase/servemart/${name}`}
-                    alt={`ServeMart - ${name}`}
+                    src={src}
+                    alt={`${project.title} screenshot`}
                     className="w-full h-40 object-cover"
                     loading="lazy"
                   />
