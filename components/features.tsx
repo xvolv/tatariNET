@@ -8,19 +8,18 @@ export default function Features() {
           {/* Left Card (replaced by "Why TatariNET") */}
           <div className="bg-white rounded-3xl p-8 shadow-lg animate-slideInLeft hover:shadow-2xl transition-all duration-300">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Why TatariNET
+              Why partner with our developers
             </h2>
             <p className="text-gray-700 mb-4">
-              Built for reliability, speed, and easy operations — TatariNET
-              combines managed hosting, expert migrations, and developer
-              training so you can ship faster and run with confidence.
+              We don't just deliver code — we join your team to ship web
+              features, improve reliability, and transfer practical knowledge.
+              Our engineers work alongside your product and engineering teams
+              from design to production on client projects.
             </p>
             <ul className="list-disc pl-5 text-sm text-slate-600 mb-6">
-              <li>
-                Production-grade infrastructure with built-in observability
-              </li>
-              <li>Zero-downtime migrations and expert support</li>
-              <li>Training and runbooks so your team stays productive</li>
+              <li>Embed with your team to deliver production features</li>
+              <li>Operational handoff, runbooks and long-term support</li>
+              <li>Developer-focused tooling and integrations</li>
             </ul>
             <a
               href="/learn-more"
@@ -35,18 +34,19 @@ export default function Features() {
           {/* Right Card */}
           <div className="bg-white rounded-3xl p-8 shadow-lg animate-slideInRight hover:shadow-2xl transition-all duration-300">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Learn <span className="text-primary">TatariNET</span>, Cloud
-              <br />
-              and More in Amharic
+              Developer Resources
             </h2>
             <p className="text-gray-600 mb-6">
-              Advance your career with our premier batch training through
-              expert-led sessions designed to help you unlock your full
-              potential.
+              Find quickstarts, SDKs, API references, and integration guides to
+              help your team build on TatariNET. Browse architecture guides,
+              examples, and community tools to accelerate development.
             </p>
-            <button className="bg-primary hover:opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all hover:scale-105">
-              View Courses →
-            </button>
+            <a
+              href="/resources"
+              className="bg-primary hover:opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all hover:scale-105 inline-block"
+            >
+              Explore Resources →
+            </a>
           </div>
         </div>
       </div>
