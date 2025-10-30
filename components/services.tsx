@@ -331,6 +331,7 @@ export default function Services() {
 
   return (
     <section
+      id="services"
       aria-labelledby="services-heading"
       className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gray-50"
     >
