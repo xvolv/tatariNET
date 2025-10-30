@@ -58,20 +58,76 @@ export default async function ProjectDetail({ params }: Props) {
 
   // Server-side: discover gallery images under public/project_showcase/{slug}
   let galleryImages: string[] = [];
+  // chosenDir will hold the real folder name when it differs from the canonical slug
+  let chosenDir: string | null = null;
   try {
-    const dir = path.join(
-      process.cwd(),
-      "public",
-      "project_showcase",
-      project.slug
+    const showcaseDir = path.join(process.cwd(), "public", "project_showcase");
+    const entries = await fs.readdir(showcaseDir);
+
+    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const target = normalize(project.slug);
+
+    // exact match
+    const exact = entries.find(
+      (e) => e.toLowerCase() === project.slug.toLowerCase()
     );
-    const files = await fs.readdir(dir);
-    galleryImages = files
-      .filter((f) => /\.(jpe?g|png|gif|svg)$/i.test(f))
-      .sort()
-      .map((f) => `/project_showcase/${project.slug}/${f}`);
+    if (exact) chosenDir = exact;
+
+    // normalized equality
+    if (!chosenDir) {
+      const normEqual = entries.find((e) => normalize(e) === target);
+      if (normEqual) chosenDir = normEqual;
+    }
+
+    // substring match
+    if (!chosenDir) {
+      const sub = entries.find(
+        (e) => normalize(e).includes(target) || target.includes(normalize(e))
+      );
+      if (sub) chosenDir = sub;
+    }
+
+    // fuzzy match via levenshtein
+    if (!chosenDir && entries.length > 0) {
+      const levenshtein = (a: string, b: string) => {
+        const an = a.length;
+        const bn = b.length;
+        const dp: number[][] = Array.from({ length: an + 1 }, () =>
+          Array(bn + 1).fill(0)
+        );
+        for (let i = 0; i <= an; i++) dp[i][0] = i;
+        for (let j = 0; j <= bn; j++) dp[0][j] = j;
+        for (let i = 1; i <= an; i++) {
+          for (let j = 1; j <= bn; j++) {
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+            dp[i][j] = Math.min(
+              dp[i - 1][j] + 1,
+              dp[i][j - 1] + 1,
+              dp[i - 1][j - 1] + cost
+            );
+          }
+        }
+        return dp[an][bn];
+      };
+
+      let best = { name: "", dist: Infinity };
+      for (const e of entries) {
+        const d = levenshtein(normalize(e), target);
+        if (d < best.dist) best = { name: e, dist: d };
+      }
+      if (best.dist <= 2) chosenDir = best.name;
+    }
+
+    if (chosenDir) {
+      const dir = path.join(showcaseDir, chosenDir);
+      const files = await fs.readdir(dir);
+      galleryImages = files
+        .filter((f) => /\.(jpe?g|png|gif|svg)$/i.test(f))
+        .sort()
+        .map((f) => `/project_showcase/${chosenDir}/${f}`);
+    }
   } catch (e) {
-    // no gallery folder or read error — leave galleryImages empty
+    // ignore and leave galleryImages empty
   }
 
   return (
@@ -85,7 +141,13 @@ export default async function ProjectDetail({ params }: Props) {
         {/* Top preview image (dashboard/preview) if present in project_showcase */}
         <div className="mb-6">
           <img
-            src={`/project_showcase/${project.slug}/dashboard.jpg`}
+            src={
+              galleryImages && galleryImages.length > 0
+                ? galleryImages[0]
+                : chosenDir
+                ? `/project_showcase/${chosenDir}/dashboard.jpg`
+                : `/project_showcase/${project.slug}/dashboard.jpg`
+            }
             alt={`${project.title} preview`}
             className="w-full rounded-xl object-cover h-56"
             style={{ objectFit: "cover" }}

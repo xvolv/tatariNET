@@ -7,11 +7,13 @@ import type { Project } from "@/lib/projects";
 type Props = {
   items: Project[];
   pattern?: "diamond" | "wave";
+  previewMap?: Record<string, string>;
 };
 
 export default function OrchestratedGrid({
   items,
   pattern = "diamond",
+  previewMap = {},
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -23,6 +25,14 @@ export default function OrchestratedGrid({
   const [previewBySlug, setPreviewBySlug] = useState<Record<string, string>>(
     {}
   );
+
+  // Initialize any previews provided by the server-side previewMap
+  useEffect(() => {
+    if (previewMap) {
+      setPreviewBySlug((s) => ({ ...previewMap, ...s }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Preload candidate preview images for each project so clones can use them during animation.
   // Try several common filenames in order and pick the first that loads.

@@ -69,33 +69,7 @@ export const PROJECTS: Project[] = [
     stack: ["Next.js", "React", "Supabase"],
     year: 2025,
   },
-  {
-    slug: "greencart",
-    title: "GreenCart",
-    short: "Sustainable grocery delivery with local sourcing.",
-    description:
-      "GreenCart connects consumers with local sustainable farms for same-day grocery delivery and low-waste packaging.",
-    stack: ["Next.js", "React", "Stripe"],
-    year: 2024,
-  },
-  {
-    slug: "paypilot",
-    title: "PayPilot",
-    short: "Embedded payments and payouts for marketplaces.",
-    description:
-      "PayPilot provides an easy SDK to onboard sellers, handle payouts, and manage split payments for marketplace platforms.",
-    stack: ["Node.js", "Stripe", "Postgres"],
-    year: 2023,
-  },
-  {
-    slug: "studiobeam",
-    title: "StudioBeam",
-    short: "Lightweight media collaboration for creators.",
-    description:
-      "StudioBeam helps creators upload, annotate, and share video edits with collaborators using fast previews and secure links.",
-    stack: ["React", "Vercel", "S3"],
-    year: 2025,
-  },
+  // removed: GreenCart, PayPilot, StudioBeam (per request)
 ];
 
 export function getProjectBySlug(slug?: string | null) {
@@ -105,5 +79,49 @@ export function getProjectBySlug(slug?: string | null) {
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "");
   const target = normalize(slug);
-  return PROJECTS.find((p) => normalize(p.slug) === target) || null;
+  // 1) exact/normalized match
+  const exact = PROJECTS.find((p) => normalize(p.slug) === target);
+  if (exact) return exact;
+
+  // 2) substring match (covers 'carental' <-> 'carrental' style differences)
+  const substring = PROJECTS.find(
+    (p) =>
+      normalize(p.slug).includes(target) || target.includes(normalize(p.slug))
+  );
+  if (substring) return substring;
+
+  // 3) fuzzy match via Levenshtein distance (allow small typos)
+  const levenshtein = (a: string, b: string) => {
+    const an = a.length;
+    const bn = b.length;
+    const dp: number[][] = Array.from({ length: an + 1 }, () =>
+      Array(bn + 1).fill(0)
+    );
+    for (let i = 0; i <= an; i++) dp[i][0] = i;
+    for (let j = 0; j <= bn; j++) dp[0][j] = j;
+    for (let i = 1; i <= an; i++) {
+      for (let j = 1; j <= bn; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(
+          dp[i - 1][j] + 1,
+          dp[i][j - 1] + 1,
+          dp[i - 1][j - 1] + cost
+        );
+      }
+    }
+    return dp[an][bn];
+  };
+
+  let best: { project: Project | null; dist: number } = {
+    project: null,
+    dist: Infinity,
+  };
+  for (const p of PROJECTS) {
+    const d = levenshtein(normalize(p.slug), target);
+    if (d < best.dist) best = { project: p, dist: d };
+  }
+  // only accept small distances to avoid accidental matches
+  if (best.project && best.dist <= 2) return best.project;
+
+  return null;
 }
