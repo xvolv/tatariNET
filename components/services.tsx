@@ -146,7 +146,7 @@ function GroupedTechRotator({
   }
 
   const iconSize = 36; // px
-  const gapPx = 8; // approximate gap (0.5rem)
+  const gapPx = 20; // approximate gap (0.5rem)
   const viewportWidth = groupSize * iconSize + (groupSize - 1) * gapPx;
   const innerWidth = groups.length * viewportWidth;
 
@@ -198,6 +198,10 @@ function GroupedTechRotator({
                 display: "flex",
                 gap: `${gapPx}px`,
                 alignItems: "center",
+            
+
+                borderBottom: "4px solid cyan",
+                padding: "5px",
               }}
             >
               {grp.map((t) => {

@@ -33,6 +33,23 @@ export default function Header() {
     }, 80);
   }
 
+  async function handleHomeClick(e: React.MouseEvent) {
+    e.preventDefault();
+    // If already on home, smooth-scroll to top
+    if (pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.replaceState(null, "", "/");
+      return;
+    }
+
+    // Not on home: navigate to home then scroll after brief delay
+    await router.push("/");
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.replaceState(null, "", "/");
+    }, 80);
+  }
+
   return (
     <>
       {/* Top Banner */}
@@ -56,7 +73,7 @@ export default function Header() {
           <div className="flex justify-between items-center h-">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <Link href="/" aria-label="TatariNET home">
+              <a href="/" aria-label="TatariNET home" onClick={handleHomeClick}>
                 <Image
                   src="/logo.png"
                   alt="TatariNET"
@@ -64,17 +81,18 @@ export default function Header() {
                   height={40}
                   className="h-22 w-auto"
                 />
-              </Link>
+              </a>
             </div>
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-8">
-              <Link
+              <a
                 href="/"
+                onClick={handleHomeClick}
                 className="text-gray-700 hover:text-gray-900 font-medium"
               >
                 Home
-              </Link>
+              </a>
               <a
                 href="/#services"
                 onClick={handleServicesClick}
