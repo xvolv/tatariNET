@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ContactPage() {
   const [firstName, setFirstName] = useState("");
@@ -42,8 +42,19 @@ export default function ContactPage() {
     }
   }
 
+  // Auto-dismiss success/error messages after a short delay
+  useEffect(() => {
+    let t: number | undefined;
+    if (status === "sent" || status === "error") {
+      t = window.setTimeout(() => setStatus("idle"), 4500);
+    }
+    return () => {
+      if (t) clearTimeout(t);
+    };
+  }, [status]);
+
   return (
-    <main className="min-h-screen bg-white py-2">
+    <main className="min-h-screen bg-white py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid gap-8 md:grid-cols-2 items-start">
           {/* Left: Contact Form */}
@@ -138,12 +149,73 @@ export default function ContactPage() {
                   </button>
                 </div>
                 {status === "sent" && (
-                  <div className="text-sm text-green-600">
-                    Message sent — we will reply soon.
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="w-full max-w-xl"
+                  >
+                    <div className="flex items-start gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-lg shadow-sm">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 flex-none"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 00-1.414-1.414L8 11.172 4.707 7.879A1 1 0 003.293 9.293l4 4a1 1 0 001.414 0l8-8z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <div className="text-sm flex-1">
+                        Message sent we will reply soon.
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="Dismiss"
+                        onClick={() => setStatus("idle")}
+                        className="text-emerald-600 hover:text-emerald-800"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 )}
+
                 {status === "error" && (
-                  <div className="text-sm text-red-600">Error: {errorMsg}</div>
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    className="w-full max-w-xl"
+                  >
+                    <div className="flex items-start gap-3 bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded-lg shadow-sm">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 flex-none"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9V7a1 1 0 112 0v2a1 1 0 11-2 0zm0 4a1 1 0 112 0 1 1 0 01-2 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <div className="text-sm flex-1">
+                        Error sending message: {errorMsg || "Unknown error"}
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="Dismiss"
+                        onClick={() => setStatus("idle")}
+                        className="text-rose-600 hover:text-rose-800"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </form>

@@ -75,6 +75,8 @@ function StarRating({ value }: { value: number }) {
 export default function Testimonials() {
   const [perPage, setPerPage] = useState(3);
   const [page, setPage] = useState(0);
+  const desktopRef = useRef<HTMLDivElement | null>(null);
+  const [desktopIndex, setDesktopIndex] = useState(0);
 
   function MobileTestimonials() {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -253,6 +255,24 @@ export default function Testimonials() {
     return () => window.removeEventListener("resize", calc);
   }, []);
 
+  // Track desktop scroll position to keep the buttons logical (optional)
+  useEffect(() => {
+    const container = desktopRef.current;
+    if (!container) return;
+    const onScroll = () => {
+      const card = container.querySelector<HTMLElement>(".flex-none");
+      if (!card) return;
+      const gap = parseFloat(getComputedStyle(container).gap || "24") || 24;
+      const amount = card.offsetWidth + gap;
+      const idx = Math.round(container.scrollLeft / amount);
+      setDesktopIndex(idx);
+    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    // initial
+    onScroll();
+    return () => container.removeEventListener("scroll", onScroll);
+  }, [perPage]);
+
   const pages = useMemo(() => {
     const out: Array<Array<(typeof testimonials)[number]>> = [];
     for (let i = 0; i < testimonials.length; i += perPage) {
@@ -323,9 +343,16 @@ export default function Testimonials() {
             <MobileTestimonials />
           ) : (
             <div className="hidden sm:block">
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Single horizontal row of cards (no wrapping). We hide native scrollbar and use buttons to navigate. */}
+              <div
+                ref={desktopRef}
+                className="flex gap-6 py-2 px-1 overflow-x-hidden snap-x snap-mandatory"
+                // allow keyboard scrollability if needed
+              >
                 {testimonials.map((t, i) => (
-                  <div key={i}>{renderCard(t, i)}</div>
+                  <div key={i} className="flex-none w-1/3 snap-start">
+                    {renderCard(t, i)}
+                  </div>
                 ))}
               </div>
             </div>
@@ -335,7 +362,25 @@ export default function Testimonials() {
           <button
             type="button"
             aria-label="Previous testimonials"
-            onClick={() => setPage((p) => (p - 1 + totalPages) % totalPages)}
+            onClick={() => {
+              const container = desktopRef.current;
+              if (!container) return;
+              const items =
+                container.querySelectorAll<HTMLElement>(".flex-none");
+              if (!items || items.length === 0) return;
+              const cardWidth = Math.round(container.clientWidth / 3);
+              const visible = 3;
+              const currentIdx = Math.round(container.scrollLeft / cardWidth);
+              let targetIdx = currentIdx - visible;
+              if (targetIdx < 0) {
+                // wrap to end
+                targetIdx = Math.max(0, items.length - visible);
+              }
+              container.scrollTo({
+                left: targetIdx * cardWidth,
+                behavior: "smooth",
+              });
+            }}
             className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full border bg-white items-center justify-center shadow-sm hover:opacity-90 sm:w-10 sm:h-10"
           >
             ‹
@@ -344,7 +389,28 @@ export default function Testimonials() {
           <button
             type="button"
             aria-label="Next testimonials"
-            onClick={() => setPage((p) => (p + 1) % totalPages)}
+            onClick={() => {
+              const container = desktopRef.current;
+              if (!container) return;
+              const items =
+                container.querySelectorAll<HTMLElement>(".flex-none");
+              if (!items || items.length === 0) return;
+              const cardWidth = Math.round(container.clientWidth / 3);
+              const visible = 3;
+              const currentIdx = Math.round(container.scrollLeft / cardWidth);
+              const maxStart = Math.max(0, items.length - visible);
+              let targetIdx = currentIdx + visible;
+              if (currentIdx >= maxStart) {
+                // If we're at or past the end, go back to first
+                targetIdx = 0;
+              } else if (targetIdx > maxStart) {
+                targetIdx = maxStart;
+              }
+              container.scrollTo({
+                left: targetIdx * cardWidth,
+                behavior: "smooth",
+              });
+            }}
             className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full border bg-white items-center justify-center shadow-sm hover:opacity-90 sm:w-10 sm:h-10"
           >
             ›
