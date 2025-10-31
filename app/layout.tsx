@@ -9,9 +9,9 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TatariNET - Network Infrastructure Solutions",
-  description: "All in one Network. Simple, powerful, affordable!",
-  generator: "v0.app",
+  title: "TatariNET",
+  description: "TatariNET Engineering Digital Excellence",
+  generator: "TatariNET",
 };
 
 export default function RootLayout({
