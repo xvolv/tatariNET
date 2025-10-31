@@ -5,7 +5,7 @@ import React, { useMemo, useRef, useState, useEffect } from "react";
 const testimonials = [
   {
     quote:
-      "TatariNET helped us migrate our infrastructure with zero downtime — our users noticed the speed immediately.",
+      "TatariNET helped us migrate our infrastructure with zero downtime our users noticed the speed immediately.",
     name: "kaleb admasu",
     role: "CTO",
     rating: 5,
@@ -19,7 +19,7 @@ const testimonials = [
   },
   {
     quote:
-      "Great tooling and outstanding support — the rollout was seamless and the training was top-notch.",
+      "Great tooling and outstanding support the rollout was seamless and the training was top-notch.",
     name: "Amina",
     role: "Product Lead",
     rating: 4,
@@ -27,7 +27,7 @@ const testimonials = [
 
   {
     quote:
-      "Excellent SLAs and monitoring — incidents are much easier to resolve now.",
+      "Excellent SLAs and monitoring incidents are much easier to resolve now.",
     name: "Daniel Ashebir",
     role: "Former client",
     rating: 5,
@@ -59,7 +59,7 @@ export default function Testimonials() {
 
   const visible = pages[page] || [];
 
-  // simplified: no autoplay, no pointer nudge/auto attempts — only click left/right
+  // simplified: no autoplay, no pointer nudge/auto attempts only click left/right
 
   return (
     <section
@@ -156,7 +156,7 @@ export default function Testimonials() {
               </div>
             </div>
 
-            {/* controls removed here — replaced by edge overlay buttons below */}
+            {/* controls removed here replaced by edge overlay buttons below */}
           </div>
 
           {/* overlay left/right buttons (edge controls) */}

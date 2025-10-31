@@ -20,13 +20,35 @@ export default function Header() {
       return;
     }
 
-    // Not on home: navigate to home, then scroll after a short delay
+    // Not on home: navigate to home, then wait for the #services element
+    // to appear and scroll to it immediately. We poll for a short window
+    // instead of relying on a fixed timeout so clicks from anywhere act
+    // as a single-step navigation+scroll.
     e.preventDefault();
     await router.push("/");
-    setTimeout(() => {
-      const el = document.getElementById("services");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 120);
+
+    const waitForEl = (id: string, timeout = 1000) =>
+      new Promise<HTMLElement | null>((resolve) => {
+        const existing = document.getElementById(id);
+        if (existing) return resolve(existing as HTMLElement);
+
+        const interval = 50;
+        let elapsed = 0;
+        const t = setInterval(() => {
+          elapsed += interval;
+          const found = document.getElementById(id);
+          if (found) {
+            clearInterval(t);
+            resolve(found as HTMLElement);
+          } else if (elapsed >= timeout) {
+            clearInterval(t);
+            resolve(null);
+          }
+        }, interval);
+      });
+
+    const el = await waitForEl("services", 1200);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function handleHomeClick(e: React.MouseEvent) {

@@ -281,9 +281,12 @@ export default async function ProjectDetail({ params }: Props) {
                           <div className="text-sm font-semibold text-slate-900">
                             {meta.title}
                           </div>
-                          <div className="text-xs text-slate-500 mt-1">
-                            <span className="font-medium">Tag:</span> {meta.tag}
-                          </div>
+                          {meta.tag && meta.tag !== "Visual / Screenshot" && (
+                            <div className="text-xs text-slate-500 mt-1">
+                              <span className="font-medium">Tag:</span>{" "}
+                              {meta.tag}
+                            </div>
+                          )}
                         </div>
                       </div>
 
