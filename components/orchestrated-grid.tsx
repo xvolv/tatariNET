@@ -182,6 +182,18 @@ export default function OrchestratedGrid({
       });
     };
 
+    // disable orchestration on small screens (mobile) to avoid layout shifts / flicker
+    const isMobile =
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 639px)").matches;
+    if (isMobile) {
+      // immediately show final grid on mobile and skip the animation entirely
+      setShowFinal(true);
+      setClones([]);
+      setClonesVisible(false);
+      return;
+    }
+
     // start on mount
     startAnimation();
 

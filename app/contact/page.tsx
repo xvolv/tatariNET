@@ -8,16 +8,38 @@ export default function ContactPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle"
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const fullName = `${firstName} ${lastName}`.trim();
-    const subject = encodeURIComponent(`Contact from ${fullName || "Website"}`);
-    const body = encodeURIComponent(
-      `Name: ${fullName}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`
-    );
-    // Open default mail client with prefilled subject/body
-    window.location.href = `mailto:tattarinet@gmail.com?subject=${subject}&body=${body}`;
+    setStatus("sending");
+    setErrorMsg(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email, phone, message }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMsg(data?.error || "Failed to send message");
+        return;
+      }
+      setStatus("sent");
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+    } catch (err: any) {
+      setStatus("error");
+      setErrorMsg(err?.message || String(err));
+    }
   }
 
   return (
@@ -105,13 +127,24 @@ export default function ContactPage() {
                 />
               </label>
 
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center bg-slate-900 text-white px-6 py-3 rounded-md hover:bg-slate-800"
-                >
-                  Send a Message
-                </button>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex justify-center w-full">
+                  <button
+                    type="submit"
+                    disabled={status === "sending"}
+                    className="inline-flex items-center justify-center bg-slate-900 text-white px-6 py-3 rounded-md hover:bg-slate-800 disabled:opacity-50"
+                  >
+                    {status === "sending" ? "Sending..." : "Send a Message"}
+                  </button>
+                </div>
+                {status === "sent" && (
+                  <div className="text-sm text-green-600">
+                    Message sent — we will reply soon.
+                  </div>
+                )}
+                {status === "error" && (
+                  <div className="text-sm text-red-600">Error: {errorMsg}</div>
+                )}
               </div>
             </form>
           </section>
