@@ -10,6 +10,8 @@ function TechIcon({ tech, size = 32 }: { tech: string; size?: number }) {
   const key = tech.toLowerCase().replace(/\s|\.|\-/g, "");
   const ICON_MAP: Record<string, string> = {
     // frontend icons
+    nextjs: "nextjs",
+    typescript: "typescript",
     html: "html",
     css: "css",
     js: "js",
@@ -17,11 +19,11 @@ function TechIcon({ tech, size = 32 }: { tech: string; size?: number }) {
     tailwind: "tailwind",
     tailwindcss: "tailwind",
     // general
-    nextjs: "nextjs",
+
     next: "nextjs",
     react: "react",
     reactnative: "react",
-    typescript: "typescript",
+
     node: "node",
     nodejs: "node",
     express: "expressjs",
@@ -129,7 +131,7 @@ function CircularTechOrbit({ tech }: { tech: string[] }) {
 
 function GroupedTechRotator({
   tech,
-  groupSize = 4,
+  groupSize = 6,
   interval = 3500,
 }: {
   tech: string[];
@@ -269,13 +271,15 @@ export default function Services() {
       title: "Product Engineering",
       desc: "End-to-end web & mobile product development",
       tech: [
+        "Next.js",
+        "TypeScript",
         "HTML",
         "CSS",
         "JavaScript",
         "TailwindCSS",
-        "Next.js",
+
         "React",
-        "TypeScript",
+
         "Node.js",
         "ExpressJS",
         "NestJS",
@@ -340,12 +344,12 @@ export default function Services() {
         <div className="text-center mb-12">
           <h2
             id="services-heading"
-            className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4"
+            className="text-4xl sm:text-5xl font-bold text-slate-700 mb-4"
           >
-            Our <span className="text-primary">Comprehensive Services</span>
+            Our <span className="text-primary t">Comprehensive Services</span>
           </h2>
-          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto">
-            From idea to production — engineering, design, and cloud practices
+          <p className="text-lg sm:text-xl text-zinc-600 max-w-2xl mx-auto">
+            From idea to production  engineering, design, and cloud practices
             that deliver value.
           </p>
         </div>

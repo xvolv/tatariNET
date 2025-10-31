@@ -21,7 +21,7 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white py-12">
+    <main className="min-h-screen bg-white py-2">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid gap-8 md:grid-cols-2 items-start">
           {/* Left: Contact Form */}
@@ -135,8 +135,11 @@ export default function ContactPage() {
                   <img src="/social/call.svg" alt="Call" className="w-6 h-6" />
                   <div>
                     <div className="text-sm font-medium">Hotline</div>
-                    <a className="text-sm text-slate-600" href="tel:909146096">
-                      909 146 096
+                    <a
+                      className="text-sm text-slate-600"
+                      href="tel:+251909146096"
+                    >
+                      +251909 146 096
                     </a>
                   </div>
                 </div>

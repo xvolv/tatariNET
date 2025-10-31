@@ -270,7 +270,7 @@ export default async function ProjectDetail({ params }: Props) {
                     <img
                       src={src}
                       alt={`${project.title} screenshot ${idx + 1}`}
-                      className="w-full h-[420px] object-cover"
+                      className="w-full h-56 sm:h-72 md:h-[420px] object-cover"
                       loading="lazy"
                       style={{ filter: "none" }}
                     />
