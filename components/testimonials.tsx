@@ -14,37 +14,30 @@ const testimonials = [
     quote:
       "The team is responsive and professional. We reduced costs and improved reliability within weeks.",
     name: "Samuel Tadesse",
-    role: "Head of Infra, AddisApp",
+    role: "Head of tech company",
     rating: 5,
   },
   {
     quote:
       "Great tooling and outstanding support — the rollout was seamless and the training was top-notch.",
-    name: "Amina Yusuf",
-    role: "Product Lead, NetSavvy",
+    name: "Amina",
+    role: "Product Lead",
     rating: 4,
   },
 
   {
     quote:
       "Excellent SLAs and monitoring — incidents are much easier to resolve now.",
-    name: "Daniel Mekonnen",
-    role: "SRE Lead, CloudWave",
+    name: "Daniel Ashebir",
+    role: "Former client",
     rating: 5,
   },
   {
     quote:
       "Their team guided us from PoC to production in record time. Highly recommended.",
-    name: "Fatima Ali",
-    role: "Head of Product, ServeZone",
+    name: "Fatima nur",
+    role: "startup consulting company",
     rating: 4,
-  },
-  {
-    quote:
-      "Robust APIs and clear documentation — integration was straightforward.",
-    name: "Bekele H.",
-    role: "Developer, MobileFirst",
-    rating: 5,
   },
 ];
 
