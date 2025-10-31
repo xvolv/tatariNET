@@ -42,12 +42,25 @@ const testimonials = [
 ];
 
 export default function Testimonials() {
-  const perPage = 3;
-  const totalPages = Math.ceil(testimonials.length / perPage);
+  const [perPage, setPerPage] = useState(3);
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");
   // autoplay state: cycles pages circularly; paused on hover or user interaction
   const [pausedAuto, setPausedAuto] = useState(false);
+
+  useEffect(() => {
+    const calc = () => {
+      const w = window.innerWidth;
+      if (w < 640) setPerPage(1);
+      else if (w < 1024) setPerPage(2);
+      else setPerPage(3);
+    };
+    calc();
+    window.addEventListener("resize", calc);
+    return () => window.removeEventListener("resize", calc);
+  }, []);
+
+  const totalPages = Math.ceil(testimonials.length / perPage);
 
   const pages = useMemo(() => {
     const out: Array<Array<(typeof testimonials)[number]>> = [];
@@ -112,7 +125,15 @@ export default function Testimonials() {
                           boxSizing: "border-box",
                         }}
                       >
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <div
+                          className={`grid gap-6 ${
+                            perPage === 1
+                              ? "grid-cols-1"
+                              : perPage === 2
+                              ? "grid-cols-2"
+                              : "grid-cols-3"
+                          }`}
+                        >
                           {pg.map((t, i) => (
                             <blockquote
                               key={`${t.name}-${pi}-${i}`}
@@ -167,7 +188,7 @@ export default function Testimonials() {
               setDirection("prev");
               setPage((p) => (p - 1 + totalPages) % totalPages);
             }}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border bg-white flex items-center justify-center shadow-sm hover:opacity-90"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full border bg-white flex items-center justify-center shadow-sm hover:opacity-90 sm:w-10 sm:h-10"
           >
             ‹
           </button>
@@ -179,7 +200,7 @@ export default function Testimonials() {
               setDirection("next");
               setPage((p) => (p + 1) % totalPages);
             }}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border bg-white flex items-center justify-center shadow-sm hover:opacity-90"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full border bg-white flex items-center justify-center shadow-sm hover:opacity-90 sm:w-10 sm:h-10"
           >
             ›
           </button>

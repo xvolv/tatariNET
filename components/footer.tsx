@@ -4,9 +4,9 @@
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-gray-900 text-white py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6">
           <div>
             <h3 className="font-bold text-lg mb-4">TatariNET</h3>
             <p className="text-gray-400 text-sm">
@@ -62,8 +62,8 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <div className="flex items-center justify-center gap-6 mb-4">
+        <div className="border-t border-gray-800 pt-6 text-center text-gray-400 text-sm">
+          <div className="flex items-center justify-center gap-4 mb-3 flex-wrap">
             <a
               href="https://t.me/tatari_net"
               aria-label="Telegram"
@@ -131,7 +131,7 @@ export default function Footer() {
             </a>
           </div>
 
-          <p>&copy; 2025 TatariNET. All rights reserved.</p>
+          <p className="w-full">&copy; 2025 TatariNET. All rights reserved.</p>
         </div>
       </div>
     </footer>
