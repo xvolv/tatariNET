@@ -77,7 +77,7 @@ export default function Testimonials() {
   return (
     <section
       aria-labelledby="testimonials-heading"
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-white"
+      className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white"
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">

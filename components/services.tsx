@@ -334,7 +334,7 @@ export default function Services() {
     <section
       id="services"
       aria-labelledby="services-heading"
-      className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gray-50"
+      className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50"
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
