@@ -6,8 +6,8 @@ const testimonials = [
   {
     quote:
       "TatariNET helped us migrate our infrastructure with zero downtime — our users noticed the speed immediately.",
-    name: "Eleni Bekele",
-    role: "CTO, EthioCloud",
+    name: "kaleb admasu",
+    role: "CTO",
     rating: 5,
   },
   {
